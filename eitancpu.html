@@ -67,6 +67,8 @@
     <input type="button" id="startbutton" value="開始Lv1" onclick="start(1)">
     <input type="button" id="startbutton2" value="開始Lv2" onclick="start(2)">
     <input type="button" id="startbutton3" value="開始Lv3" onclick="start(3)">
+    <input type="button" id="startbutton2" value="開始Lv4" onclick="start(4)">
+    <input type="button" id="startbutton3" value="開始Lv5" onclick="start(5)">
     <input type="button" id="battlebutton" value="戦う" onclick="battle()" disabled><br>
     </div>
     <br><br><br><br>
@@ -154,6 +156,8 @@
             document.getElementById("startbutton").disabled = true;
             document.getElementById("startbutton2").disabled = true;
             document.getElementById("startbutton3").disabled = true;
+            document.getElementById("startbutton4").disabled = true;
+            document.getElementById("startbutton5").disabled = true;
             document.getElementById("battlebutton").disabled = false;
             name1 = document.getElementById("monster0").value
             name2 = document.getElementById("monster3").value
@@ -257,6 +261,8 @@
                 document.getElementById("startbutton").disabled = false;
                 document.getElementById("startbutton2").disabled = false;
                 document.getElementById("startbutton3").disabled = false;
+                document.getElementById("startbutton4").disabled = false;
+                document.getElementById("startbutton5").disabled = false;
                 document.getElementById("battlebutton").disabled = true;
             }
             nowdraw()
