@@ -9,9 +9,15 @@
         body{
             background-color:#eeeeee;
         }
-        .place{
+        #myplace{
             text-align:left;
-            background-color:#ffffff;
+            background-color:#afa;
+            border-radius: 10px;
+            border:5px solid #111111;
+        }
+        #enemyplace{
+            text-align:left;
+            background-color:#faa;
             border-radius: 10px;
             border:5px solid #111111;
         }
@@ -21,11 +27,42 @@
         .big{
             font-size:150%;
         }
+        table{
+            background-color:white;
+        }
+        .fire{
+            background-color:#faa;
+        }
+        .water{
+            background-color:#aaf;
+        }
+        .grass{
+            background-color:#afa;
+        }
+        .light{
+            background-color:#ffa;
+        }
+        .dark{
+            background-color:#aaa;
+        }
+        .plus{
+            color:red;
+        }
+        .minus{
+            color:blue;
+        }
     </style>
 </head>
 <body>
     <div id="start">
     1P名前<input type="text" id="monster0" value="たろう">
+    <select id="monster0type">
+            <option value="0" selected>炎</option>
+            <option value="1">水</option>
+            <option value="2">草</option>
+            <option value="3">光</option>
+            <option value="4">闇</option>
+    </select>
     2P名前<input type="text" id="monster3" value="じろう">
     <input type="button" id="startbutton" value="開始Lv1" onclick="start(1)">
     <input type="button" id="startbutton2" value="開始Lv2" onclick="start(2)">
@@ -33,24 +70,78 @@
     <input type="button" id="battlebutton" value="戦う" onclick="battle()" disabled><br>
     </div>
     <br><br><br><br>
-    <div class="place" id="myprace">
-        <span class="big" id="p1monster">たろう</span> LV50<br>HP <span class="allright" id="textHP1">300/300</span>
+    <div class="place" id="myplace">
+        (<span id="typep1">ほのお</span>)<span class="big" id="p1monster">たろう</span> LV50<br>HP <span class="allright" id="textHP1">300/300</span>
         <progress id="progresshp1" max="100" value="100"></progress>
     </div><br><br><br>
-    <div class="place" id="enemyprace">
-        <span class="big" id="p2monster">じろう</span> LV50<br>HP <span class="allright" id="textHP2">300/300</span>
+    <div class="place" id="enemyplace">
+        (<span id="typep2">ほのお</span>)<span class="big" id="p2monster">じろう</span> LV50<br>HP <span class="allright" id="textHP2">300/300</span>
         <progress id="progresshp2" max="100" value="100"></progress>
     </div><br>
+    相性表<br>
+    <table border="1">
+        <tr>
+            <td>攻|防</td>
+            <td class="fire">火(名、代)</td>
+            <td class="water">水(動)</td>
+            <td class="grass">草(形、副)</td>
+            <td class="light">光(熟語)</td>
+            <td class="dark">闇(その他)</td>
+        </tr>
+        <tr>
+            <td class="fire">火</td>
+            <td></td>
+            <td class="minus">-20</td>
+            <td class="plus">+20</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="water">水</td>
+            <td class="plus">+20</td>
+            <td></td>
+            <td class="minus">-20</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="grass">草</td>
+            <td class="minus">-20</td>
+            <td class="plus">+20</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="light">光</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="minus">-20</td>
+            <td class="plus">+20</td>
+        </tr>
+        <tr>
+            <td class="dark">闇</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="plus">+20</td>
+            <td class="minus">-20</td>
+        </tr>
+    </table>
     <script>
         let name1 = "たろう"
         let name2 = "じろう"
-        const type = ["ほのお","みず","しぜん","ひかり","やみ"]
-        const japtango = ["りんご","星","切る"]
-        const engtango = ["apple","star","cut"]
-        let maxHP1 = 300
-        let maxHP2 = 300
-        let HP1 = 300
-        let HP2 = 300
+        const type = ["炎","水","草","光","闇"]
+        const weekpoint = [1,2,0,4,3]
+        const charmpoint = [2,0,1,3,4]
+        const japtango = ["(動)〜を尊重する","(名)個人(形)個人の","(動)〜を確約する","(2)という結果になる"]
+        const engtango = ["respect","individual","assure","turn out"]
+        const eitantype = [1,0,1,3]
+        let maxHP1 = 500
+        let maxHP2 = 500
+        let HP1 = 500
+        let HP2 = 500
         let type1 = 0
         let type2 = 0
         let turn = 1;
@@ -58,6 +149,7 @@
         let nowmonster2 = 0;
         let damege = 0;
         let seiko = 50
+        let player = 0;
         function start(level){
             document.getElementById("startbutton").disabled = true;
             document.getElementById("startbutton2").disabled = true;
@@ -65,10 +157,13 @@
             document.getElementById("battlebutton").disabled = false;
             name1 = document.getElementById("monster0").value
             name2 = document.getElementById("monster3").value
-            maxHP1 = 300
-            maxHP2 = 300
-            HP1 = 300
-            HP2 = 300
+            type1 = document.getElementById("monster0type").selectedIndex
+            type2 = Math.floor(Math.random() * 5)
+            maxHP1 = 500
+            maxHP2 = 500
+            HP1 = 500
+            HP2 = 500
+            player = 0
             seiko=30+(level*10)
             nowdraw();
         }
@@ -81,20 +176,46 @@
             document.getElementById("progresshp2").value = HP2
             document.getElementById("textHP1").innerHTML = HP1 +"/"+ maxHP1
             document.getElementById("textHP2").innerHTML = HP2 +"/"+ maxHP2
+            document.getElementById("typep1").innerHTML = type[type1]
+            document.getElementById("typep2").innerHTML = type[type2]
         }
         function battle(){
             if(HP1<1 || HP2<1){
                 return
+            } 
+            if(player==0){
+                let agility = Math.floor(Math.random() * 100)
+                let agility2 = Math.floor(Math.random() * 100)
+                if(agility < agility2){
+                    turn=2
+                    alert(agility+" - "+agility2+"で"+name2+"の先制！")
+                }else{
+                    turn=1
+                    alert(agility+" - "+agility2+"で"+name1+"の先制！")
+                }
+                player=2
             }
             alert(turn+"Pのターンです　次の日本語を英単語にしなさい")
             let random = Math.floor(Math.random() * engtango.length)
             let plusdam = Math.floor(Math.random() * 10)
             if(turn==1){
-                alert(name1+"の攻撃！")
                 let answer = window.prompt(japtango[random])
+                alert(name1+"の "+japtango[random]+"！") 
                 if(answer==engtango[random]){
-                    alert("うまく決まった！")
-                    damage=engtango[random].length*10+plusdam
+                    if(eitantype[random] == weekpoint[type2]){
+                        alert("効果は抜群だ！")
+                        damage=engtango[random].length*10+plusdam+20
+                    }else if(eitantype[random] == charmpoint[type2]){
+                        alert("効果は今ひとつ")
+                        damage=engtango[random].length*10+plusdam-20
+                    }else{
+                        alert("うまく決まった！")
+                        damage=engtango[random].length*10+plusdam
+                    }
+                    if(plusdam==0){
+                        alert("クリティカルヒット！")
+                        damage+=30
+                    }
                     HP2-=damage
                     alert(damage+"ダメージを与えた")
                 }else{
@@ -102,19 +223,35 @@
                     alert("正解は "+engtango[random])
                 }
             }else{
-                alert(name2+"の攻撃！")
+                alert(name2+"の "+japtango[random]+"！")
                 let cpu = Math.floor(Math.random() * 100)
                 if(cpu<seiko){
-                    alert("相手の攻撃がうまく決まった！")
-                    damage=engtango[random].length*10+plusdam
+                    if(eitantype[random] == weekpoint[type1]){
+                        alert("大ダメージを受けた！")
+                        damage=engtango[random].length*10+plusdam+20
+                    }else if(eitantype[random] == charmpoint[type1]){
+                        alert("効果は今ひとつ")
+                        damage=engtango[random].length*10+plusdam-20
+                    }else{
+                        alert("相手の攻撃がうまく決まった！")
+                        damage=engtango[random].length*10+plusdam
+                    }
+                    if(plusdam==0){
+                        alert("クリティカルヒット！")
+                        damage+=30
+                    }
                     HP1-=damage
                     alert(damage+"ダメージを受けた！")
                 }else{
                     alert("しかし　うまく決まらなかった！")
                 }
             }
-            
-
+            player-=1
+            if(turn==1){
+                turn=2
+            }else if(turn==2){
+                turn=1
+            }
             if(HP1<1 || HP2<1){
                 alert("ゲームセット！")
                 document.getElementById("startbutton").disabled = false;
@@ -123,11 +260,6 @@
                 document.getElementById("battlebutton").disabled = true;
             }
             nowdraw()
-            if(turn==1){
-                turn=2
-            }else if(turn==2){
-                turn=1
-            }
         }
     </script>
 </body>
